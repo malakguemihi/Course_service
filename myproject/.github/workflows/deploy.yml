@@ -2,40 +2,29 @@ name: Django CI and Deploy to Render
 
 on:
   push:
-    branches: [ master ]        # عند كل دفع للـ master
+    branches: [ master ]
   pull_request:
-    branches: [ master ]        # عند عمل pull request على master
+    branches: [ master ]
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest       # تشغيل على نظام Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository
-    - uses: actions/checkout@v3
-
-    # Step 2: Set up Python 3.11 (أو الإصدار الذي تستخدمه)
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-
-    # Step 3: Install dependencies
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-
-    # Step 4: Run migrations and collect static files
-    - name: Run Django migrations & collectstatic
-      run: |
-        python manage.py migrate --settings=myproject.settings_prod
-        python manage.py collectstatic --noinput --settings=myproject.settings_prod
-
-    # Step 5: Install Render CLI
-    - name: Install Render CLI
-      run: curl -fsSL https://cdn.render.com/cli/install.sh | bash
-
-    # Step 6: Deploy to Render
-    - name: Deploy to production
-      run: render deploy --service-id ${{ secrets.SERVICE_ID }} --api-key ${{ secrets.RENDER_API_KEY}}
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Django migrations & collectstatic
+        run: |
+          python manage.py migrate --settings=myproject.settings_prod
+          python manage.py collectstatic --noinput --settings=myproject.settings_prod
+      - name: Install Render CLI
+        run: curl -fsSL https://cdn.render.com/cli/install.sh | bash
+      - name: Deploy to Render
+        run: render deploy --service-id ${{ secrets.SERVICE_ID }} --api-key ${{ secrets.RENDER_API_KEY }}
