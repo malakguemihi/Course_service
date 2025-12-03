@@ -1,28 +1,34 @@
-name: Deploy to Render
+name: Django CI and Deploy to Render
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Install Render CLI
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
         run: |
-          curl -fsSL https://cdn.render.com/cli/install.sh | bash
-          echo "$HOME/.render/bin" >> $GITHUB_PATH
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Verify Render CLI
-        run: render --version
+      - name: Run Django migrations & collectstatic
+        run: |
+          python myproject/manage.py migrate --settings=myproject.settings_prod
+          python myproject/manage.py collectstatic --noinput --settings=myproject.settings_prod
 
+      # استخدم الـ Action الرسمي لـ Render
       - name: Deploy to Render
-        run: |
-          render deploy \
-            --service-id ${{ secrets.SERVICE_ID }} \
-            --api-key ${{ secrets.RENDER_API_KEY }}
+        uses: render-examples/deploy-render@v1
+        with:
+          api_key: ${{ secrets.RENDER_API_KEY }}
+          service_id: ${{ secrets.SERVICE_ID }}
