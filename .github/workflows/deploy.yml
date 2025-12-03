@@ -36,7 +36,7 @@ jobs:
 
       # 5. Deploy using official Render Action
       - name: Deploy to Render
-        uses: render-examples/deploy-render@v1
+        uses: render-examples/github-action@v1
         with:
           api_key: ${{ secrets.RENDER_API_KEY }}
           service_id: ${{ secrets.SERVICE_ID }}
