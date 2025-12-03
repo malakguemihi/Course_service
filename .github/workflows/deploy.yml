@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
+      # Step 1: Checkout repository
       - uses: actions/checkout@v3
 
       # Step 2: Set up Python
@@ -20,25 +20,28 @@ jobs:
         with:
           python-version: '3.11'
 
-      # Step 3: Install dependencies
+      # Step 3: Install dependencies from requirements.txt in root
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 4: Run Django migrations & collectstatic
+      # Step 4: Run Django migrations & collectstatic (manage.py داخل myproject)
       - name: Run Django migrations & collectstatic
         run: |
           python myproject/manage.py migrate --settings=myproject.settings_prod
           python myproject/manage.py collectstatic --noinput --settings=myproject.settings_prod
 
-      # Step 5: Install Render CLI correctly
+      # Step 5: Install Render CLI
       - name: Install Render CLI
         run: |
           curl -fsSL https://cdn.render.com/cli/install.sh | bash
-          echo "$HOME/.render/bin" >> $GITHUB_PATH
 
-      # Step 6: Deploy to Render
+      # Step 6: Add Render CLI to PATH
+      - name: Add Render CLI to PATH
+        run: echo "$HOME/.render/bin" >> $GITHUB_PATH
+
+      # Step 7: Deploy to Render
       - name: Deploy to Render
         run: render deploy --service-id ${{ secrets.SERVICE_ID }} --api-key ${{ secrets.RENDER_API_KEY }}
         shell: bash
