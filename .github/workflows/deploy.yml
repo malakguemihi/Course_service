@@ -22,6 +22,7 @@ jobs:
           pip install -r requirements.txt
       - name: Run Django migrations & collectstatic
         run: |
+          cd myproject
           python manage.py migrate --settings=myproject.settings_prod
           python manage.py collectstatic --noinput --settings=myproject.settings_prod
       - name: Install Render CLI
