@@ -11,30 +11,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout code
+      # 1. جلب كود المشروع
       - uses: actions/checkout@v3
 
-      # 2. Setup Python
+      # 2. تثبيت Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      # 3. Install dependencies
+      # 3. تثبيت الاعتمادات
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. Run Django migrations & collectstatic
-      - name: Django migrate & collectstatic
+      # 4. تشغيل migrations وجمع static
+      - name: Run Django migrations & collectstatic
         run: |
           python myproject/manage.py migrate --settings=myproject.settings_prod
           python myproject/manage.py collectstatic --noinput --settings=myproject.settings_prod
 
-      # 5. Deploy using official Render Action
+      # 5. تثبيت Render CLI
+      - name: Install Render CLI
+        run: |
+          curl -fsSL https://cdn.render.com/cli/install.sh | bash
+          echo "$HOME/.render/bin" >> $GITHUB_PATH
+
+      # 6. التحقق من CLI
+      - name: Check Render CLI
+        run: render --version
+
+      # 7. تنفيذ deploy
       - name: Deploy to Render
-        uses: render-examples/deploy-render@v1
-        with:
-          api_key: ${{ secrets.RENDER_API_KEY }}
-          service_id: ${{ secrets.SERVICE_ID }}
+        run: render deploy --service-id ${{ secrets.SERVICE_ID }} --api-key ${{ secrets.RENDER_API_KEY }}
+        shell: bash
