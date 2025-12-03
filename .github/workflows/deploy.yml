@@ -8,12 +8,21 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Render CLI
+        run: |
+          curl -fsSL https://cdn.render.com/cli/install.sh | bash
+          echo "$HOME/.render/bin" >> $GITHUB_PATH
+
+      - name: Verify Render CLI
+        run: render --version
+
       - name: Deploy to Render
-        uses: render-oss/render-deploy-action@v1
-        with:
-          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
-          apiKey: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          render deploy \
+            --service-id ${{ secrets.SERVICE_ID }} \
+            --api-key ${{ secrets.RENDER_API_KEY }}
