@@ -1,32 +1,16 @@
-"""
-Django settings for production (Render deployment) for Course Service project.
-"""
-
 import os
 from pathlib import Path
 
-# ============================
-# Paths
-# ============================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ============================
-# Security
-# ============================
-# SECRET_KEY يجب تغييره قبل النشر
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'rnd_TOQxhT7974uribZjlIiAnJqIjY6I')
+# ---------------- Security ----------------
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'changeme-for-production')
+DEBUG = False
 
-# فقط السيرفرات المسموح بها
-ALLOWED_HOSTS = ['Course_service', '127.0.0.1', 'localhost']
+# ضع هنا اسم نطاق الخدمة على Render أو اسم السيرفر الذي ستستخدمه
+ALLOWED_HOSTS = ['https://course-service-27um.onrender.com', '127.0.0.1', 'localhost']
 
-# ============================
-# Debug mode
-# ============================
-DEBUG = False  # في الإنتاج يجب أن يكون False
-
-# ============================
-# Installed apps
-# ============================
+# ---------------- Installed apps ----------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -34,13 +18,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # تطبيقات المشروع
     'courses',
 ]
 
-# ============================
-# Middleware
-# ============================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -53,9 +33,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'myproject.urls'
 
-# ============================
-# Templates
-# ============================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -74,69 +51,45 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
-# ============================
-# Database (Postgres Render)
-# ============================
+# ---------------- Database ----------------
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'course_db_lq07',
-        'USER': 'course_db_lq07_user',
-        'PASSWORD': '4RQXkQiaE3iRIsfifUdmZDfwbOjsccz7',
-        'HOST': 'dpg-d4nmf7p5pdvs73a8qgl0-a.oregon-postgres.render.com',
-        'PORT': '5432',
+        'NAME': os.environ.get('DB_NAME', 'course_db_lq07'),
+        'USER': os.environ.get('DB_USER', 'course_db_lq07_user'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', '4RQXkQiaE3iRIsfifUdmZDfwbOjsccz7'),
+        'HOST': os.environ.get('DB_HOST', 'dpg-d4nmf7p5pdvs73a8qgl0-a.oregon-postgres.render.com'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
-# ============================
-# Password validation
-# ============================
+# ---------------- Password validation ----------------
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
-# ============================
-# Internationalization
-# ============================
+# ---------------- Internationalization ----------------
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# ============================
-# Static files (CSS, JS, images)
-# ============================
+# ---------------- Static & Media ----------------
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # لتخزين الملفات عند collectstatic
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# ============================
-# Media files (uploads)
-# ============================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# ============================
-# Default primary key field type
-# ============================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ============================
-# Optional: Email settings (إذا أردت إرسال بريد)
-# ============================
+# ---------------- Optional Email ----------------
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.example.com')
-EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD', '')

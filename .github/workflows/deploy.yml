@@ -28,6 +28,8 @@ jobs:
 
       # 4. Run Django migrations & collectstatic
       - name: Django migrate & collectstatic
+        env:
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
         run: |
           python myproject/manage.py migrate --settings=myproject.settings_prod
           python myproject/manage.py collectstatic --noinput --settings=myproject.settings_prod
