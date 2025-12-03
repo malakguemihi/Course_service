@@ -26,14 +26,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 4: Run Django migrations and collect static files
+      # Step 4: Run Django migrations & collectstatic
       - name: Run Django migrations & collectstatic
         run: |
           python myproject/manage.py migrate --settings=myproject.settings_prod
           python myproject/manage.py collectstatic --noinput --settings=myproject.settings_prod
 
-      # Step 5: Install Render CLI and add it to PATH
-      - name: Install Render CLI and add to PATH
+      # Step 5: Install Render CLI correctly
+      - name: Install Render CLI
         run: |
           curl -fsSL https://cdn.render.com/cli/install.sh | bash
           echo "$HOME/.render/bin" >> $GITHUB_PATH
